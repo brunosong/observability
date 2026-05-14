@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actuator
+  namespace: monitoring-apps
+  labels:
+    app: actuator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: actuator
+  template:
+    metadata:
+      labels:
+        app: actuator
+    spec:
+      containers:
+        - name: actuator
+          image: monitoring/actuator:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8081
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 768Mi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actuator
+  namespace: monitoring-apps
+  labels:
+    app: actuator
+spec:
+  selector:
+    app: actuator
+  ports:
+    - name: http
+      port: 8081
+      targetPort: http
