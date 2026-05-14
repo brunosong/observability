@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: loadgen
+
+server:
+  port: 8082
+
+loadgen:
+  target-url: http://localhost:8081
+  interval:
+    hello: 500
+    users: 800
+    userById: 1000
+    userCreate: 2000
+    orders: 1200
+    products: 700
+    slow: 3000
+    flaky: 600
+
+logging:
+  level:
+    com.brunosong.loadgen: INFO

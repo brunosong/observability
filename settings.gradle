@@ -2,3 +2,4 @@ rootProject.name = 'monitoring'
 
 include 'otel'
 include 'actuator'
+include 'loadgen'
