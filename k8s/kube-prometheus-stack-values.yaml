@@ -1,0 +1,63 @@
+# kind 클러스터용 kube-prometheus-stack 설정
+# 영구 볼륨/리소스를 절약하고, 호스트에서 port-forward로 접근하는 구성
+
+fullnameOverride: prom
+
+# kind에서는 control-plane 컴포넌트 메트릭을 노출하기 어렵거나 의미가 없음
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
+    # ServiceMonitor / PodMonitor를 모든 네임스페이스/라벨에서 자동 발견
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+  service:
+    type: ClusterIP
+
+grafana:
+  adminPassword: admin
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  defaultDashboardsTimezone: browser
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+  service:
+    type: ClusterIP
+
+# 클러스터 노드 메트릭을 위한 exporter (kind에서도 동작)
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
