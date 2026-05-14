@@ -1,10 +1,10 @@
-package com.brunosong.monitoring;
+package com.brunosong.actuator;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MonitoringApplicationTests {
+class ActuatorApplicationTests {
 
     @Test
     void contextLoads() {

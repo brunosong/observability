@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: actuator
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
