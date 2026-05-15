@@ -1,0 +1,5 @@
+rootProject.name = 'otel'
+
+include 'demo'
+include 'starter'
+include 'sample'

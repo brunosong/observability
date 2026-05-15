@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: otel-sample-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  config:
+    import: "classpath:application-observability-otel.yml"
+
+server:
+  port: 8094

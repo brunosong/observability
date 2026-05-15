@@ -1,0 +1,20 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, env, beans, threaddump
+  endpoint:
+    health:
+      show-details: when-authorized
+
+otel:
+  traces:
+    sampler: parentbased_traceidratio
+    sampler.arg: 0.25
+  metrics:
+    export:
+      interval: 30000
+
+common:
+  observability:
+    environment: ${DEPLOY_ENV:stg}

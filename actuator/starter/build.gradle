@@ -3,7 +3,7 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
-description = 'common-observability'
+description = 'starter'
 
 dependencyManagement {
     imports {

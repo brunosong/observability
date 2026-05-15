@@ -1,7 +1,5 @@
 rootProject.name = 'monitoring'
 
-include 'otel'
-include 'actuator'
-include 'loadgen'
-include 'common-observability'
-include 'sample-service'
+includeBuild 'actuator'
+includeBuild 'otel'
+includeBuild 'loadgen'

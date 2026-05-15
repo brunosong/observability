@@ -1,0 +1,19 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+otel:
+  traces:
+    sampler: always_on
+  metrics:
+    export:
+      interval: 10000
+
+common:
+  observability:
+    environment: ${DEPLOY_ENV:dev}
