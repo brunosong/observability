@@ -18,3 +18,45 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+
+otel:
+  springboot:
+    httpclients:
+      enabled: true
+  resource:
+    attributes:
+      service.name: ${spring.application.name}
+      service.namespace: monitoring
+      deployment.environment: ${OTEL_DEPLOYMENT_ENV:dev}
+  exporter:
+    otlp:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4317}
+      protocol: grpc
+      timeout: 10000
+  traces:
+    exporter: ${OTEL_TRACES_EXPORTER:otlp}
+    sampler: ${OTEL_TRACES_SAMPLER:parentbased_always_on}
+  metrics:
+    exporter: ${OTEL_METRICS_EXPORTER:otlp}
+    export:
+      interval: 30000
+  logs:
+    exporter: ${OTEL_LOGS_EXPORTER:otlp}
+  propagators: tracecontext,baggage,b3
+
+logging:
+  level:
+    io.opentelemetry: INFO
+    com.brunosong.otel: DEBUG

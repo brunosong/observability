@@ -6,17 +6,35 @@ plugins {
 
 description = 'otel'
 
+ext {
+    otelBomVersion = '1.32.0'
+    otelInstrumentationBomVersion = '1.32.0-alpha'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.opentelemetry:opentelemetry-bom:${otelBomVersion}"
+        mavenBom "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:${otelInstrumentationBomVersion}"
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter'
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations'
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+    implementation 'io.opentelemetry:opentelemetry-exporter-logging'
+
     runtimeOnly 'com.h2database:h2'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testCompileOnly 'org.projectlombok:lombok'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }

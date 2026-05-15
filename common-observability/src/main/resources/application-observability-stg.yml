@@ -1,0 +1,12 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics, env, beans, threaddump
+  endpoint:
+    health:
+      show-details: when-authorized
+
+common:
+  observability:
+    environment: ${DEPLOY_ENV:stg}

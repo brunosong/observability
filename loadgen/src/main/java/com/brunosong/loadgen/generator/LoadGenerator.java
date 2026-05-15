@@ -2,11 +2,14 @@ package com.brunosong.loadgen.generator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,55 +20,53 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class LoadGenerator {
 
-    private final RestClient restClient;
+    private final RestTemplate restTemplate;
     private final AtomicLong totalCalls = new AtomicLong();
     private final AtomicLong totalFailures = new AtomicLong();
 
     @Scheduled(fixedRateString = "${loadgen.interval.hello:500}")
     public void hitHello() {
-        call("GET /api/hello", () -> restClient.get().uri("/api/hello").retrieve().body(String.class));
+        call("GET /api/hello", () -> restTemplate.getForObject("/api/hello", String.class));
     }
 
     @Scheduled(fixedRateString = "${loadgen.interval.users:800}")
     public void hitUsersList() {
-        call("GET /api/users", () -> restClient.get().uri("/api/users").retrieve().body(String.class));
+        call("GET /api/users", () -> restTemplate.getForObject("/api/users", String.class));
     }
 
     @Scheduled(fixedRateString = "${loadgen.interval.userById:1000}")
     public void hitUserById() {
         int id = ThreadLocalRandom.current().nextInt(1, 4);
-        call("GET /api/users/" + id, () -> restClient.get().uri("/api/users/{id}", id).retrieve().body(String.class));
+        call("GET /api/users/" + id, () -> restTemplate.getForObject("/api/users/{id}", String.class, id));
     }
 
     @Scheduled(fixedRateString = "${loadgen.interval.userCreate:2000}")
     public void hitUserCreate() {
         Map<String, Object> body = Map.of("name", "user-" + ThreadLocalRandom.current().nextInt(1000));
-        call("POST /api/users", () -> restClient.post()
-                .uri("/api/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body)
-                .retrieve()
-                .body(String.class));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+        call("POST /api/users", () -> restTemplate.exchange("/api/users", HttpMethod.POST, entity, String.class).getBody());
     }
 
     @Scheduled(fixedRateString = "${loadgen.interval.orders:1200}")
     public void hitOrders() {
-        call("GET /api/orders", () -> restClient.get().uri("/api/orders").retrieve().body(String.class));
+        call("GET /api/orders", () -> restTemplate.getForObject("/api/orders", String.class));
     }
 
     @Scheduled(fixedRateString = "${loadgen.interval.products:700}")
     public void hitProducts() {
-        call("GET /api/products", () -> restClient.get().uri("/api/products").retrieve().body(String.class));
+        call("GET /api/products", () -> restTemplate.getForObject("/api/products", String.class));
     }
 
     @Scheduled(fixedRateString = "${loadgen.interval.slow:3000}")
     public void hitSlow() {
-        call("GET /api/products/slow", () -> restClient.get().uri("/api/products/slow").retrieve().body(String.class));
+        call("GET /api/products/slow", () -> restTemplate.getForObject("/api/products/slow", String.class));
     }
 
     @Scheduled(fixedRateString = "${loadgen.interval.flaky:600}")
     public void hitFlaky() {
-        call("GET /api/products/flaky", () -> restClient.get().uri("/api/products/flaky").retrieve().body(String.class));
+        call("GET /api/products/flaky", () -> restTemplate.getForObject("/api/products/flaky", String.class));
     }
 
     @Scheduled(fixedRate = 10_000)
