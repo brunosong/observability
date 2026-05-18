@@ -16,6 +16,18 @@ loadgen:
     products: 700
     slow: 3000
     flaky: 600
+  scenario:
+    poolExhaustIntervalMs: 300000   # every 5 minutes
+    poolExhaustInitialDelayMs: 30000
+    poolExhaustConcurrency: 14      # > Hikari pool size (10) → starvation
+    poolExhaustHoldMinMs: 1000      # random hold range per request
+    poolExhaustHoldMaxMs: 10000
+    cpuExhaustIntervalMs: 420000    # every 7 minutes (offset from pool-exhaust)
+    cpuExhaustInitialDelayMs: 120000
+    cpuExhaustConcurrency: 4
+    cpuExhaustDurationMinMs: 1000   # random burn range per request
+    cpuExhaustDurationMaxMs: 10000
+    cpuExhaustThreads: 4            # per request
 
 logging:
   level:

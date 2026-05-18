@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: actuator
+  namespace: monitoring-apps
+  labels:
+    app: actuator
+spec:
+  selector:
+    matchLabels:
+      app: actuator
+  namespaceSelector:
+    matchNames:
+      - monitoring-apps
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 5s
+      scrapeTimeout: 4s

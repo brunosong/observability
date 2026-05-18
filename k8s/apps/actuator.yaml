@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: actuator
-          image: monitoring/actuator:dev
-          imagePullPolicy: IfNotPresent
+          image: localhost:5001/monitoring/actuator:dev
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8081

@@ -17,7 +17,7 @@ public class RestClientConfig {
         return builder
                 .rootUri(baseUrl)
                 .setConnectTimeout(Duration.ofSeconds(2))
-                .setReadTimeout(Duration.ofSeconds(5))
+                .setReadTimeout(Duration.ofSeconds(60))
                 .build();
     }
 }

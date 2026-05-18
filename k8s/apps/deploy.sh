@@ -3,6 +3,7 @@ set -euo pipefail
 
 CLUSTER_NAME="${CLUSTER_NAME:-db-migration}"
 TAG="${TAG:-dev}"
+REGISTRY="${REGISTRY:-localhost:5000}"
 MODULES=(otel actuator loadgen)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,10 +11,18 @@ ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 cd "${ROOT_DIR}"
 
-echo ">> Building boot jars"
-./gradlew $(printf ':%s:bootJar ' "${MODULES[@]}") --console=plain -q
+echo ">> Building boot jars (otel, loadgen)"
+./gradlew :otel:bootJar :loadgen:bootJar --console=plain -q
 
-for mod in "${MODULES[@]}"; do
+echo
+echo ">> Building & pushing actuator image via Jib -> ${REGISTRY}/monitoring/actuator:${TAG}"
+./gradlew :actuator:demo:jib \
+    -PimageRegistry="${REGISTRY}" \
+    -PimageRepo=monitoring/actuator \
+    -PimageTag="${TAG}" \
+    --console=plain
+
+for mod in otel loadgen; do
     echo
     echo ">> Building image monitoring/${mod}:${TAG}"
     docker build -t "monitoring/${mod}:${TAG}" "${mod}/"
@@ -30,6 +39,10 @@ echo ">> Applying workload manifests"
 kubectl apply -f "${SCRIPT_DIR}/otel.yaml" \
               -f "${SCRIPT_DIR}/actuator.yaml" \
               -f "${SCRIPT_DIR}/loadgen.yaml"
+
+echo
+echo ">> Restarting actuator to pull fresh image from registry"
+kubectl -n monitoring-apps rollout restart deployment/actuator
 
 echo
 echo ">> Waiting for rollouts"

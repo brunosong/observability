@@ -2,9 +2,32 @@ plugins {
     id 'java'
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
+    id 'com.google.cloud.tools.jib' version '3.4.4'
 }
 
 description = 'demo'
+
+ext {
+    imageRegistry = project.findProperty('imageRegistry') ?: 'localhost:5001'
+    imageRepo     = project.findProperty('imageRepo')     ?: 'monitoring/actuator'
+    imageTag      = project.findProperty('imageTag')      ?: 'dev'
+}
+
+jib {
+    from {
+        image = 'eclipse-temurin:17-jre'
+    }
+    to {
+        image = "${imageRegistry}/${imageRepo}"
+        tags  = [imageTag]
+    }
+    container {
+        mainClass = 'com.brunosong.actuator.ActuatorApplication'
+        ports     = ['8081']
+        jvmFlags  = ['-XX:+UseContainerSupport', '-XX:MaxRAMPercentage=75.0']
+    }
+    allowInsecureRegistries = true
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'

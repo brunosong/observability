@@ -1,0 +1,163 @@
+{
+  "type": "timeseries",
+  "title": "HikariCP Pool State",
+  "description": "Idle/Active/Pending/Total connections with Min/Max reference lines. Pending > 0 indicates pool starvation (db-lock contention).",
+  "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+  },
+  "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+  "targets": [
+    {
+      "refId": "A",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "expr": "hikaricp_connections_idle{application=\"$application\", instance=\"$instance\"}",
+      "legendFormat": "idle",
+      "interval": "",
+      "editorMode": "code",
+      "range": true
+    },
+    {
+      "refId": "B",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "expr": "hikaricp_connections_active{application=\"$application\", instance=\"$instance\"}",
+      "legendFormat": "active",
+      "interval": "",
+      "editorMode": "code",
+      "range": true
+    },
+    {
+      "refId": "C",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "expr": "hikaricp_connections_pending{application=\"$application\", instance=\"$instance\"}",
+      "legendFormat": "pending",
+      "interval": "",
+      "editorMode": "code",
+      "range": true
+    },
+    {
+      "refId": "D",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "expr": "hikaricp_connections{application=\"$application\", instance=\"$instance\"}",
+      "legendFormat": "total",
+      "interval": "",
+      "editorMode": "code",
+      "range": true
+    },
+    {
+      "refId": "E",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "expr": "hikaricp_connections_min{application=\"$application\", instance=\"$instance\"}",
+      "legendFormat": "min",
+      "interval": "",
+      "editorMode": "code",
+      "range": true
+    },
+    {
+      "refId": "F",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "expr": "hikaricp_connections_max{application=\"$application\", instance=\"$instance\"}",
+      "legendFormat": "max",
+      "interval": "",
+      "editorMode": "code",
+      "range": true
+    }
+  ],
+  "options": {
+    "tooltip": {
+      "mode": "multi",
+      "sort": "desc"
+    },
+    "legend": {
+      "showLegend": true,
+      "displayMode": "table",
+      "placement": "right",
+      "calcs": ["lastNotNull", "max", "min"]
+    }
+  },
+  "fieldConfig": {
+    "defaults": {
+      "unit": "short",
+      "decimals": 0,
+      "min": 0,
+      "custom": {
+        "drawStyle": "line",
+        "lineInterpolation": "stepAfter",
+        "lineWidth": 2,
+        "fillOpacity": 8,
+        "gradientMode": "none",
+        "spanNulls": true,
+        "showPoints": "never",
+        "pointSize": 5,
+        "stacking": { "mode": "none", "group": "A" },
+        "axisPlacement": "auto",
+        "axisLabel": "connections",
+        "axisGridShow": true,
+        "scaleDistribution": { "type": "linear" },
+        "hideFrom": { "tooltip": false, "viz": false, "legend": false }
+      },
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          { "color": "green",  "value": null },
+          { "color": "orange", "value": 1 },
+          { "color": "red",    "value": 2 }
+        ]
+      },
+      "color": { "mode": "thresholds" },
+      "mappings": []
+    },
+    "overrides": [
+      {
+        "matcher": { "id": "byName", "options": "idle" },
+        "properties": [
+          { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } },
+          { "id": "custom.lineWidth", "value": 2 }
+        ]
+      },
+      {
+        "matcher": { "id": "byName", "options": "active" },
+        "properties": [
+          { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } },
+          { "id": "custom.lineWidth", "value": 2 },
+          { "id": "custom.fillOpacity", "value": 15 }
+        ]
+      },
+      {
+        "matcher": { "id": "byName", "options": "pending" },
+        "properties": [
+          { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+          { "id": "custom.lineWidth", "value": 3 },
+          { "id": "custom.fillOpacity", "value": 30 }
+        ]
+      },
+      {
+        "matcher": { "id": "byName", "options": "total" },
+        "properties": [
+          { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } },
+          { "id": "custom.lineWidth", "value": 1 },
+          { "id": "custom.fillOpacity", "value": 0 }
+        ]
+      },
+      {
+        "matcher": { "id": "byName", "options": "max" },
+        "properties": [
+          { "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } },
+          { "id": "custom.lineWidth", "value": 1 },
+          { "id": "custom.lineStyle", "value": { "fill": "dash", "dash": [10, 10] } },
+          { "id": "custom.fillOpacity", "value": 0 },
+          { "id": "custom.hideFrom", "value": { "tooltip": false, "viz": false, "legend": false } }
+        ]
+      },
+      {
+        "matcher": { "id": "byName", "options": "min" },
+        "properties": [
+          { "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } },
+          { "id": "custom.lineWidth", "value": 1 },
+          { "id": "custom.lineStyle", "value": { "fill": "dot", "dash": [2, 4] } },
+          { "id": "custom.fillOpacity", "value": 0 }
+        ]
+      }
+    ]
+  }
+}
